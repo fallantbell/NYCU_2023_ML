@@ -1,54 +1,80 @@
 import numpy as np
-
-def generate_linear(n=100):
-    import numpy as np
-    pts = np.random.uniform(0,1,(n,2))
-    inputs = []
-    labels = []
-    for pt in pts:
-        inputs.append([pt[0],pt[1]])
-        distance = (pt[0]-pt[1])/1.414
-        if pt[0]>pt[1]:
-            labels.append(0)
-        else:
-            labels.append(1)
-    return np.array(inputs), np.array(labels).reshape(n,1)
-
-def generate_XOR_easy():
-    inputs = []
-    labels = []
-
-    for i in range(11):
-        inputs.append([0.1*i,0.1*i])
-        labels.append(0)
-
-        if 0.1*i == 0.5:
-            continue
-
-        inputs.append([0.1*i,1-0.1*i])
-        labels.append(1)
-    return np.array(inputs), np.array(labels).reshape(21,1)
-
-def show_result(x,y,pred_y):
-    import matplotlib.pyplot as plt
-    plt.subplot(1,2,1)
-    plt.title('Ground truth',fontsize = 18)
-    for i in range(x.shape[0]):
-        if y[i]==0:
-            plt.plot(x[i][0],x[i][1],'ro')
-        else:
-            plt.plot(x[i][0],x[i][1],'bo')
-    plt.subplot(1,2,2)
-    plt.title('Predict result',fontsize = 18)
-    for i in range(x.shape[0]):
-        if pred_y[i]==0:
-            plt.plot(x[i][0],x[i][1],'ro')
-        else:
-            plt.plot(x[i][0],x[i][1],'bo')
-    plt.show()
+from generate import Generate_dataset
+import matplotlib.pyplot as plt
+from model import MLP
     
+
+def train_and_test(mlp,G,data="linear"):
+    if data == "linear":
+        x, y = G.generate_linear(n=100)
+    else:
+        x, y = G.generate_XOR_easy()
+
+    epoch = 0
+    lr = 0.01
+    loss_record = []
+
+    print(f"\n ------ {data} traing ------ \n")
+
+    while True:
+        epoch += 1
+
+        predict = mlp.forward(x)
+
+        L = mlp.loss(predict,y)
+
+        loss_record.append(L)
+
+        accuracy = mlp.accuracy(predict,y)
+
+        if epoch % 100 ==0:
+            print(f"epoch {epoch}: loss = {L} , accuracy = {accuracy} %")
+
+        if accuracy >= 100:##
+            print(f"epoch {epoch}: loss = {L} , accuracy = {accuracy} %")
+            break
+        if epoch > 30000:
+            print("something wrong")
+            break 
+        
+        mlp.backward(predict,y)
+        mlp.update_weight(lr = lr)
+
+    pred_y = mlp.forward(x)
+    print(f"result:")
+    print(f"{pred_y}")
+    print(" ")
+
+    pred_y[pred_y > 0.5] = 1
+    pred_y[pred_y <= 0.5] = 0
+    accuracy = mlp.accuracy(pred_y,y)
+    print(f"accuracy: {accuracy}")
+    print(" ")
+
+    G.show_result(x,y,f"{data}.png",pred_y)
+
+    plt.plot(loss_record)
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.savefig(f"{data}_loss.png")
+    plt.close()
+
+if __name__ == '__main__':
+
+    mlp = MLP(hidden_layer = 2,
+          hidden_size = 10,
+          activate_funtion="sigmoid") 
+    
+    G = Generate_dataset()   
             
-x, y = generate_linear(n=100)
-x, y = generate_XOR_easy()
+    train_and_test(mlp,G,data="linear")
+
+    mlp2 = MLP(hidden_layer = 2,
+          hidden_size = 10,
+          activate_funtion="sigmoid")  
+
+    G2 = Generate_dataset()   
+    train_and_test(mlp2,G2,data="xor")
 
 
