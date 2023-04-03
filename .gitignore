@@ -5,6 +5,10 @@ __pycache__/
 
 *.png
 *.txt
+*.pth
+*.npz
+
+.vscode/
 
 # C extensions
 *.so
