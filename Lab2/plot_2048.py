@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 episodes = []
 means = []
 
-with open("log_add_feature.txt", 'r', encoding='utf-8') as fp:
+with open("log.txt", 'r', encoding='utf-8') as fp:
     for line in fp.readlines():
         s = line.split('\t')
         if len(s) < 2:
@@ -18,5 +18,5 @@ plt.plot(episodes, means)
 plt.xlabel('Episodes')
 plt.ylabel('mean')
 plt.grid()
-plt.savefig('score_add_feature_P.png')
+plt.savefig('score.png')
     

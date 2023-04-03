@@ -725,17 +725,19 @@ public:
 				// 對所有可能情況計算平均得分
 				int blank=0;
 				float total_value=0.0;
-				for(int i=0;i<16;i++){
-					if(move->after_state().at(i) == 0){ // 空白區域
-						// 計算新場面的value
-						move->after_state().set(i,2);
-						total_value+=0.1*estimate(move->after_state()); // 出現4機率 1/10
 
-						move->after_state().set(i,1);
-						total_value+=0.9*estimate(move->after_state()); // 出現2機率 9/10
+				board af = move->after_state();
+				for(int i=0;i<16;i++){
+					if(af.at(i) == 0){ // 空白區域
+						// 計算新場面的value
+						af.set(i,2);
+						total_value = total_value + 0.1*estimate(af); // 出現4機率 1/10
+
+						af.set(i,1);
+						total_value = total_value + 0.9*estimate(af); // 出現2機率 9/10
 
 						blank++;
-						move->after_state().set(i,0);
+						af.set(i,0);
 					}
 				}
 
@@ -894,7 +896,7 @@ int main(int argc, const char* argv[]) {
 
 	// set the learning parameters
 	float alpha = 0.1;
-	size_t total = 300000;
+	size_t total = 1000;
 	unsigned seed;
 	__asm__ __volatile__ ("rdtsc" : "=a" (seed));
 	info << "alpha = " << alpha << std::endl;
@@ -907,12 +909,12 @@ int main(int argc, const char* argv[]) {
 	tdl.add_feature(new pattern({ 4, 5, 6, 7, 8, 9 }));
 	tdl.add_feature(new pattern({ 0, 1, 2, 4, 5, 6 }));
 	tdl.add_feature(new pattern({ 4, 5, 6, 8, 9, 10 }));
-	tdl.add_feature(new pattern({ 4, 5, 6, 7 }));
-	tdl.add_feature(new pattern({ 0, 1, 2, 3 }));
-	tdl.add_feature(new pattern({ 1, 4, 5, 6, 9 }));
+	// tdl.add_feature(new pattern({ 4, 5, 6, 7 }));
+	// tdl.add_feature(new pattern({ 0, 1, 2, 3 }));
+	// tdl.add_feature(new pattern({ 1, 4, 5, 6, 9 }));
 
 	// restore the model from file
-	tdl.load("");
+	tdl.load("weight.bin");
 
 	// train the model
 	std::vector<state> path;
@@ -945,7 +947,7 @@ int main(int argc, const char* argv[]) {
 		tdl.make_statistic(n, b, score);
 		path.clear();
 		if(n%1000 == 0){
-			tdl.save("weight_add_feature.bin");
+			// tdl.save("weight_add_feature.bin");
 		}
 		
 	}
