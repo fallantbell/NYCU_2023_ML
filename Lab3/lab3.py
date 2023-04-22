@@ -1,6 +1,6 @@
 import os,sys
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-cpu_num = 2 # Num of CPUs you want to use
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+cpu_num = 1 # Num of CPUs you want to use
 os.environ['OMP_NUM_THREADS'] = str(cpu_num)
 os.environ['OPENBLAS_NUM_THREADS'] = str(cpu_num)
 os.environ['MKL_NUM_THREADS'] = str(cpu_num)
@@ -11,12 +11,12 @@ torch.set_num_threads(cpu_num)
 from dataloader import read_bci_data
 from model import EEGNet, DeepConvNet
 from record import Record
-from tqdm import tqdm
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
 from torch.optim import Adam
+# from torchsummary import summary
 
 best_acc = {"EEG_Relu":0,"EEG_LeakyRelu":0,"EEG_Elu":0,"Deep_Relu":0,"Deep_LeakyRelu":0,"Deep_Elu":0}
 
@@ -89,7 +89,7 @@ def main(model,epochs,batch,lr,activate,model_name,record,T=False):
     
     if T == True:
         test_acc = test(model,test_data_loader,device,record,activate)
-        print(f"test_acc = {test_acc}% \n")
+        print(f"test_acc = {round(test_acc,3)}% \n")
         sys.exit(0)
     
     print(f"\n {model_name} train ({activate}): \n")
@@ -105,8 +105,8 @@ def main(model,epochs,batch,lr,activate,model_name,record,T=False):
         if test_acc > best_test_acc:
             best_test_acc = test_acc
             best_acc[f"{model_name}_{activate}"] = best_test_acc
-            if epoch > 100:
-                torch.save(model.state_dict(),f"{model_name}_{activate}.pth")
+            # if epoch > 100:
+            #     torch.save(model.state_dict(),f"{model_name}_{activate}.pth")
 
 
 

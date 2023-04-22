@@ -35,7 +35,7 @@ class EEGNet(nn.Module):
             nn.BatchNorm2d(32),
             self.activate,
             nn.AvgPool2d(kernel_size=(1, 4), stride=(1, 4), padding=0),
-            nn.Dropout(p=0.25)
+            nn.Dropout(p=0.25) #0.25
         )
 
         self.separableconv = nn.Sequential(
@@ -50,7 +50,7 @@ class EEGNet(nn.Module):
             nn.BatchNorm2d(32),
             self.activate,
             nn.AvgPool2d(kernel_size=(1, 8), stride=(1, 8), padding=0),
-            nn.Dropout(p=0.25)
+            nn.Dropout(p=0.25) #0.25
         )
 
         self.classify = nn.Sequential(
@@ -60,10 +60,15 @@ class EEGNet(nn.Module):
 
 
     def forward(self,x):
+        # [64,1,2,750]
         x = self.firstconv(x)
+        # [64,16,2,750]
         x = self.depthwiseconv(x)
+        # [64,32,1,187]
         x = self.separableconv(x)
+        # [64,32,1,23]
         x = self.classify(x)
+        # [64,2]
         return x
     
 
@@ -92,7 +97,7 @@ class DeepConvNet(nn.Module):
             nn.BatchNorm2d(25),
             self.activate,
             nn.MaxPool2d(kernel_size=(1, 2)),
-            nn.Dropout(p=0.5)
+            nn.Dropout(p=0.5) #0.5
         )
 
         self.conv_1 = nn.Sequential(
