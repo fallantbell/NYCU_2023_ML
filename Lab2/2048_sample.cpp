@@ -774,7 +774,7 @@ public:
 		float after_value = 0.0;
 		for(int i=path.size()-2 ; i>=0 ;i--){
 			float update_weight = alpha * (path[i].reward()+after_value-estimate(path[i].before_state()));
-			after_value = path[i].reward() + update(path[i].before_state(),update_weight);
+			after_value = update(path[i].before_state(),update_weight);
 		}
 		debug << "update_episode " << std::endl;
 	}
@@ -922,6 +922,7 @@ int main(int argc, const char* argv[]) {
 	for (size_t n = 1; n <= total; n++) {
 		board b;
 		int score = 0;
+		info << "n="<<n<<std::endl;
 
 		// play an episode
 		debug << "begin episode" << std::endl;
