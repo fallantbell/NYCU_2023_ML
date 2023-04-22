@@ -7,8 +7,11 @@ __pycache__/
 *.txt
 *.pth
 *.npz
+*.csv
+*.zip
 
 .vscode/
+new*/
 
 # C extensions
 *.so
