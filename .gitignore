@@ -9,9 +9,21 @@ __pycache__/
 *.npz
 *.csv
 *.zip
+*.pt
 
 .vscode/
 new*/
+
+train/
+test/
+validate/
+result/
+log/
+logs/
+content/
+models/
+results/
+iclevr/
 
 # C extensions
 *.so
